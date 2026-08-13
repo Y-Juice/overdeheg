@@ -94,3 +94,11 @@ export interface MessageAnalysis {
   chargedTerms: string[];
   suspicionScore: number;
 }
+
+/** Een gevonden verband dat nog niet in de database staat. */
+export interface CorrelationMatch {
+  uid: string;
+  matchType: CorrelationMatchType;
+  weight: number;
+  details: string;
+}

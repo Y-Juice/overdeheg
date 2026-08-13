@@ -1,5 +1,11 @@
 import express from "express";
 import { checkDatabaseConnection, pool } from "./db/client";
+import { CorrelationEngine } from "./engine/CorrelationEngine";
+import { DeletionMatcher } from "./engine/matchers/DeletionMatcher";
+import { EditPatternMatcher } from "./engine/matchers/EditPatternMatcher";
+import { HesitationMatcher } from "./engine/matchers/HesitationMatcher";
+import { KeywordMatcher } from "./engine/matchers/KeywordMatcher";
+import { MovementMatcher } from "./engine/matchers/MovementMatcher";
 import { createMessagesRouter } from "./routes/messages";
 import { createPingsRouter } from "./routes/pings";
 import { LocationService } from "./services/LocationService";
@@ -20,11 +26,14 @@ app.use(express.json());
 
 const port = Number(process.env.PORT ?? 4000);
 
+const CORRELATION_INTERVAL_MS = 60_000;
+
 const systemLogService = new SystemLogService(pool);
+const nlpService = new NLPService();
 const messageService = new MessageService(
   pool,
   new MessageValidator(),
-  new NLPService(),
+  nlpService,
   systemLogService
 );
 
@@ -34,6 +43,19 @@ const locationService = new LocationService(
   new ZoneService(pool),
   systemLogService
 );
+
+const correlationEngine = new CorrelationEngine(
+  pool,
+  [
+    new HesitationMatcher(pool),
+    new EditPatternMatcher(pool),
+    new DeletionMatcher(pool),
+    new MovementMatcher(pool),
+    new KeywordMatcher(pool, nlpService)
+  ],
+  systemLogService
+);
+correlationEngine.start(CORRELATION_INTERVAL_MS);
 
 app.use("/api/messages", createMessagesRouter(messageService));
 app.use("/api/pings", createPingsRouter(locationService));
