@@ -87,3 +87,10 @@ export interface SystemLogEntry {
   message: string;
   createdAt: Date;
 }
+
+/** Resultaat van de NLP-analyse van een berichttekst. */
+export interface MessageAnalysis {
+  keywords: string[];
+  chargedTerms: string[];
+  suspicionScore: number;
+}

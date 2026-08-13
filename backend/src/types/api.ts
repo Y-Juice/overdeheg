@@ -22,6 +22,16 @@ export interface CreatePingRequest {
   longitude: number;
 }
 
+/** Een bericht zoals de frontend het terugkrijgt, zonder de stil gelogde metadata. */
+export interface MessageView {
+  id: number;
+  uid: string;
+  zoneId: number;
+  content: string;
+  isDeleted: boolean;
+  createdAt: Date;
+}
+
 /** Een bewoner zoals de frontend die te zien krijgt op de kaart. */
 export interface ResidentView {
   uid: string;
