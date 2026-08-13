@@ -22,6 +22,13 @@ export interface CreatePingRequest {
   longitude: number;
 }
 
+/** Antwoord op POST /api/pings: de zone waar de bewoner nu is ingedeeld. */
+export interface PingView {
+  uid: string;
+  zoneId: number;
+  zoneName: string;
+}
+
 /** Een bericht zoals de frontend het terugkrijgt, zonder de stil gelogde metadata. */
 export interface MessageView {
   id: number;
