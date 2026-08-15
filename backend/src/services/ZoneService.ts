@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Zone } from "../types/domain";
+import { ZoneView } from "../types/api";
 
 /** Geografische grenzen van de wijk Overdeheg. */
 const LAT_MIN = 51.996;
@@ -26,8 +26,16 @@ interface ZoneRow {
 export class ZoneService {
   constructor(private readonly db: Pool) {}
 
+  /** Geeft alle zones van de wijk, gesorteerd op rasterpositie. */
+  async listZones(): Promise<ZoneView[]> {
+    const result = await this.db.query<ZoneRow>(
+      "SELECT id, name, grid_x, grid_y FROM zones ORDER BY grid_y, grid_x"
+    );
+    return result.rows.map((row) => this.toView(row));
+  }
+
   /** Bepaalt in welke zone de gegeven coordinaten vallen. */
-  async deriveZone(latitude: number, longitude: number): Promise<Zone> {
+  async deriveZone(latitude: number, longitude: number): Promise<ZoneView> {
     const clampedLat = Math.min(Math.max(latitude, LAT_MIN), LAT_MAX);
     const clampedLng = Math.min(Math.max(longitude, LNG_MIN), LNG_MAX);
 
@@ -52,7 +60,11 @@ export class ZoneService {
       throw new Error(`Geen zone gevonden op rasterpositie (${gridX}, ${gridY})`);
     }
 
-    const row = result.rows[0];
+    return this.toView(result.rows[0]);
+  }
+
+  /** Zet een databasrij om naar de publieke zonevorm. */
+  private toView(row: ZoneRow): ZoneView {
     return { id: row.id, name: row.name, gridX: row.grid_x, gridY: row.grid_y };
   }
 }
