@@ -10,6 +10,8 @@ export interface Session {
   longitude: number;
   zoneId: number | null;
   zoneName: string | null;
+  homeZoneId: number | null;
+  homeZoneName: string | null;
 }
 
 /** Volledige clientstaat die de hooks in de store bijhouden. */

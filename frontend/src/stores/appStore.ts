@@ -9,6 +9,7 @@ interface AppStore extends AppState {
   setResidents: (residents: ResidentView[]) => void;
   setSystemLog: (entries: SystemLogEntry[]) => void;
   setError: (error: string | null) => void;
+  selectZone: (zoneId: number, zoneName: string) => void;
 }
 
 const emptySession: Session = {
@@ -16,7 +17,9 @@ const emptySession: Session = {
   latitude: 0,
   longitude: 0,
   zoneId: null,
-  zoneName: null
+  zoneName: null,
+  homeZoneId: null,
+  homeZoneName: null
 };
 
 /**
@@ -36,5 +39,9 @@ export const useAppStore = create<AppStore>((set) => ({
   setMessages: (messages) => set({ messages }),
   setResidents: (residents) => set({ residents }),
   setSystemLog: (entries) => set({ systemLog: entries }),
-  setError: (error) => set({ error })
+  setError: (error) => set({ error }),
+  selectZone: (zoneId, zoneName) =>
+    set((state) => ({
+      session: { ...state.session, zoneId, zoneName }
+    }))
 }));
