@@ -1,0 +1,23 @@
+.wrap {
+  margin-top: 1.25rem;
+}
+
+.title {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  margin-bottom: 0.6rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.4rem;
+}
+
+.empty {
+  color: #888;
+  font-size: 0.85rem;
+}

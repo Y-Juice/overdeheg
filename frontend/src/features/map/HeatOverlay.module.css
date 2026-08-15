@@ -1,0 +1,25 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.heat0 {
+  background-color: rgba(40, 80, 60, 0.15);
+}
+
+.heat1 {
+  background-color: rgba(80, 120, 50, 0.25);
+}
+
+.heat2 {
+  background-color: rgba(180, 150, 40, 0.35);
+}
+
+.heat3 {
+  background-color: rgba(200, 90, 30, 0.45);
+}
+
+.heat4 {
+  background-color: rgba(200, 30, 30, 0.55);
+}
