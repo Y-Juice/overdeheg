@@ -60,3 +60,15 @@ export interface CreatePingPayload {
   latitude: number;
   longitude: number;
 }
+
+/** Antwoord op een locatieping: de zone waar de bewoner is ingedeeld. */
+export interface PingView {
+  uid: string;
+  zoneId: number;
+  zoneName: string;
+}
+
+/** Foutvorm die de API teruggeeft. */
+export interface ApiError {
+  error: string;
+}
