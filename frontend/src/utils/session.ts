@@ -35,7 +35,9 @@ export function loadOrCreateSession(): Session {
       latitude: Number(storedLat),
       longitude: Number(storedLng),
       zoneId: null,
-      zoneName: null
+      zoneName: null,
+      homeZoneId: null,
+      homeZoneName: null
     };
   }
 
@@ -50,6 +52,8 @@ export function loadOrCreateSession(): Session {
     latitude: point.latitude,
     longitude: point.longitude,
     zoneId: null,
-    zoneName: null
+    zoneName: null,
+    homeZoneId: null,
+    homeZoneName: null
   };
 }

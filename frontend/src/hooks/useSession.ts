@@ -23,7 +23,9 @@ export function useSession(): void {
       setSession({
         ...session,
         zoneId: ping.zoneId,
-        zoneName: ping.zoneName
+        zoneName: ping.zoneName,
+        homeZoneId: ping.zoneId,
+        homeZoneName: ping.zoneName
       });
     } catch (error) {
       setError(error instanceof Error ? error.message : "Sessie starten mislukt");
