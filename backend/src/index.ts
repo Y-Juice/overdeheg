@@ -10,6 +10,8 @@ import { ThreatModelService } from "./engine/ThreatModelService";
 import { createMessagesRouter } from "./routes/messages";
 import { createPingsRouter } from "./routes/pings";
 import { createResidentsRouter } from "./routes/residents";
+import { createSystemLogRouter } from "./routes/systemLog";
+import { createZonesRouter } from "./routes/zones";
 import { FlagService } from "./services/FlagService";
 import { LocationService } from "./services/LocationService";
 import { MessageService } from "./services/MessageService";
@@ -42,10 +44,11 @@ const messageService = new MessageService(
   systemLogService
 );
 
+const zoneService = new ZoneService(pool);
 const locationService = new LocationService(
   pool,
   new PingValidator(),
-  new ZoneService(pool),
+  zoneService,
   systemLogService
 );
 
@@ -71,6 +74,8 @@ threatModelService.start(THREAT_MODEL_INTERVAL_MS);
 app.use("/api/messages", createMessagesRouter(messageService));
 app.use("/api/pings", createPingsRouter(locationService));
 app.use("/api/residents", createResidentsRouter(new ResidentService(pool)));
+app.use("/api/zones", createZonesRouter(zoneService));
+app.use("/api/system-log", createSystemLogRouter(systemLogService));
 
 app.get("/api/health", async (_req, res) => {
   const databaseOk = await checkDatabaseConnection();
