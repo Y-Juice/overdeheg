@@ -1,4 +1,4 @@
-import { FlagLevel } from "./domain";
+import { FlagLevel, LogLevel } from "./domain";
 
 /**
  * API-types van Overdeheg.
@@ -45,6 +45,22 @@ export interface ResidentView {
   zoneId: number;
   riskScore: number;
   flagLevel: FlagLevel;
+}
+
+/** Een zone zoals de frontend die op de kaart tekent. */
+export interface ZoneView {
+  id: number;
+  name: string;
+  gridX: number;
+  gridY: number;
+}
+
+/** Een regel uit het systeemlog zoals de frontend die toont. */
+export interface SystemLogView {
+  id: number;
+  level: LogLevel;
+  message: string;
+  createdAt: Date;
 }
 
 /** Standaard foutvorm die elke route teruggeeft bij een fout. */
