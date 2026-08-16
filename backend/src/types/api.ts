@@ -1,4 +1,4 @@
-import { FlagLevel, LogLevel } from "./domain";
+import { CorrelationMatchType, FlagLevel, LogLevel } from "./domain";
 
 /**
  * API-types van Overdeheg.
@@ -66,4 +66,56 @@ export interface SystemLogView {
 /** Standaard foutvorm die elke route teruggeeft bij een fout. */
 export interface ApiError {
   error: string;
+}
+
+/** Totalen bovenaan het risicopaneel. */
+export interface RiskTotalsView {
+  residentCount: number;
+  averageRisk: number;
+  flaggedCount: number;
+  criticalCount: number;
+  messageCount: number;
+  pingCount: number;
+  correlationCount: number;
+}
+
+/** Risico-samenvatting van één zone. */
+export interface ZoneRiskView {
+  zoneId: number;
+  zoneName: string;
+  residentCount: number;
+  averageRisk: number;
+  maxRisk: number;
+  flaggedCount: number;
+}
+
+/** Bewoner in de risicoranking. */
+export interface ResidentRiskView {
+  uid: string;
+  zoneId: number;
+  zoneName: string;
+  riskScore: number;
+  flagLevel: FlagLevel;
+}
+
+/** Aantal correlaties per matchtype. */
+export interface SignalStatView {
+  matchType: CorrelationMatchType;
+  count: number;
+  totalWeight: number;
+}
+
+/** Aantal bewoners per vlagniveau. */
+export interface FlagStatView {
+  level: FlagLevel;
+  count: number;
+}
+
+/** Volledig risico-overzicht voor visualisatie. */
+export interface RiskOverviewView {
+  totals: RiskTotalsView;
+  zones: ZoneRiskView[];
+  residents: ResidentRiskView[];
+  signals: SignalStatView[];
+  flags: FlagStatView[];
 }

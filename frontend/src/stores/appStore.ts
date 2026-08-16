@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Message, ResidentView, SystemLogEntry, Zone } from "../types";
+import { Message, ResidentView, RiskOverview, SystemLogEntry, Zone } from "../types";
 import { AppState, Session } from "../types/store";
 
 interface AppStore extends AppState {
@@ -8,6 +8,7 @@ interface AppStore extends AppState {
   setMessages: (messages: Message[]) => void;
   setResidents: (residents: ResidentView[]) => void;
   setSystemLog: (entries: SystemLogEntry[]) => void;
+  setRiskOverview: (overview: RiskOverview | null) => void;
   setError: (error: string | null) => void;
   selectZone: (zoneId: number, zoneName: string) => void;
 }
@@ -33,12 +34,14 @@ export const useAppStore = create<AppStore>((set) => ({
   messages: [],
   residents: [],
   systemLog: [],
+  riskOverview: null,
   error: null,
   setSession: (session) => set({ session }),
   setZones: (zones) => set({ zones }),
   setMessages: (messages) => set({ messages }),
   setResidents: (residents) => set({ residents }),
   setSystemLog: (entries) => set({ systemLog: entries }),
+  setRiskOverview: (overview) => set({ riskOverview: overview }),
   setError: (error) => set({ error }),
   selectZone: (zoneId, zoneName) =>
     set((state) => ({

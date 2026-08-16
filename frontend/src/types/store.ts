@@ -1,4 +1,4 @@
-import { Message, ResidentView, SystemLogEntry, Zone } from "./index";
+import { Message, ResidentView, RiskOverview, SystemLogEntry, Zone } from "./index";
 
 /**
  * Sessie van de lokale bewoner.
@@ -21,5 +21,6 @@ export interface AppState {
   messages: Message[];
   residents: ResidentView[];
   systemLog: SystemLogEntry[];
+  riskOverview: RiskOverview | null;
   error: string | null;
 }
