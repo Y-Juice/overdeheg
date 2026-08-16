@@ -20,11 +20,11 @@ export class NightActivityMatcher implements CorrelationMatcher {
     const result = await this.db.query<NightRow>(
       `SELECT uid, COUNT(*)::text AS night_count
        FROM messages
-       WHERE created_at > now() - interval '48 hours'
+       WHERE created_at > now() - interval '12 hours'
          AND (EXTRACT(HOUR FROM created_at) >= 22
           OR EXTRACT(HOUR FROM created_at) < 6)
        GROUP BY uid
-       HAVING COUNT(*) >= 2`
+       HAVING COUNT(*) >= 6`
     );
 
     return result.rows.map((row) => {
@@ -32,7 +32,7 @@ export class NightActivityMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, count / 6),
+        weight: Math.min(0.35, count / 18),
         details: `${count} nachtberichten tussen 22:00 en 06:00`
       };
     });

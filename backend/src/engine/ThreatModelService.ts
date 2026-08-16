@@ -29,26 +29,30 @@ export class ThreatModelService {
   ) {}
 
   /** Deler waarmee de som van correlatiegewichten naar 0..1 wordt geschaald. */
-  private static readonly WEIGHT_DIVISOR = 3;
+  private static readonly WEIGHT_DIVISOR = 6;
 
   /** Maximale korting door vriendelijke berichten. */
   private static readonly MAX_CIVIC_CREDIT = 0.4;
+
+  /** Deel van het verschil dat per tick omhoog mag. */
+  private static readonly RISE_RATE = 0.18;
+
+  /** Deel van het verschil dat per tick omlaag mag. */
+  private static readonly FALL_RATE = 0.55;
 
   /** Herberekent de risicoscore van alle bewoners en werkt hun vlaggen bij. */
   async recalculateScores(): Promise<void> {
     const result = await this.db.query<ScoreRow>(
       `SELECT r.uid, r.risk_score,
-              COALESCE(SUM(c.weight), 0) AS total_weight,
+              COALESCE((
+                SELECT SUM(c.weight) FROM correlations c WHERE c.uid = r.uid
+              ), 0) AS total_weight,
               GREATEST(
-                MAX(m.created_at),
-                MAX(p.created_at),
+                (SELECT MAX(m.created_at) FROM messages m WHERE m.uid = r.uid),
+                (SELECT MAX(p.created_at) FROM location_pings p WHERE p.uid = r.uid),
                 r.created_at
               ) AS last_active
-       FROM residents r
-       LEFT JOIN correlations c ON c.uid = r.uid
-       LEFT JOIN messages m ON m.uid = r.uid
-       LEFT JOIN location_pings p ON p.uid = r.uid
-       GROUP BY r.uid, r.risk_score, r.created_at`
+       FROM residents r`
     );
 
     const civicByUid = await this.loadCivicCredit();
@@ -60,8 +64,9 @@ export class ThreatModelService {
       );
       const decay = this.decayForInactivity(row.last_active);
       const civicCredit = civicByUid.get(row.uid) ?? 0;
-      const score = this.clamp(rawScore * decay - civicCredit);
+      const target = this.clamp(rawScore * decay - civicCredit);
       const previous = row.risk_score;
+      const score = this.stepTowards(previous, target);
 
       await this.db.query(
         "UPDATE residents SET risk_score = $1 WHERE uid = $2",
@@ -144,6 +149,21 @@ export class ThreatModelService {
       return 0.32;
     }
     return 0.12;
+  }
+
+  /**
+   * Laat de score maar een stukje per tick groeien,
+   * zodat risico niet in één scan naar kritiek springt.
+   */
+  private stepTowards(previous: number, target: number): number {
+    if (target > previous) {
+      return this.clamp(
+        previous + (target - previous) * ThreatModelService.RISE_RATE
+      );
+    }
+    return this.clamp(
+      previous + (target - previous) * ThreatModelService.FALL_RATE
+    );
   }
 
   private clamp(value: number): number {

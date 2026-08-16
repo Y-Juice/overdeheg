@@ -20,9 +20,9 @@ export class BurstMatcher implements CorrelationMatcher {
     const result = await this.db.query<BurstRow>(
       `SELECT uid, COUNT(*)::text AS burst_count
        FROM messages
-       WHERE created_at >= NOW() - INTERVAL '45 minutes'
+       WHERE created_at >= NOW() - INTERVAL '30 minutes'
        GROUP BY uid
-       HAVING COUNT(*) >= 3`
+       HAVING COUNT(*) >= 8`
     );
 
     return result.rows.map((row) => {
@@ -30,8 +30,8 @@ export class BurstMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, count / 8),
-        details: `${count} berichten in de laatste 45 minuten`
+        weight: Math.min(0.4, count / 20),
+        details: `${count} berichten in de laatste 30 minuten`
       };
     });
   }

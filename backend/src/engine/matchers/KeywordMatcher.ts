@@ -3,7 +3,7 @@ import { NLPService } from "../../services/NLPService";
 import { CorrelationMatch } from "../../types/domain";
 import { CorrelationMatcher } from "./CorrelationMatcher";
 
-const WEIGHT_PER_CHARGED_TERM = 0.25;
+const WEIGHT_PER_CHARGED_TERM = 0.12;
 
 interface ContentRow {
   uid: string;
@@ -45,7 +45,7 @@ export class KeywordMatcher implements CorrelationMatcher {
     return [...termsPerResident.entries()].map(([uid, terms]) => ({
       uid,
       matchType: this.matchType,
-      weight: Math.min(1, terms.size * WEIGHT_PER_CHARGED_TERM),
+      weight: Math.min(0.4, terms.size * WEIGHT_PER_CHARGED_TERM),
       details: `Beladen termen gebruikt: ${[...terms].join(", ")}`
     }));
   }

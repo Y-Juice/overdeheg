@@ -2,8 +2,8 @@ import { Pool } from "pg";
 import { CorrelationMatch } from "../../types/domain";
 import { CorrelationMatcher } from "./CorrelationMatcher";
 
-const MIN_AVG_HESITATION_MS = 3000;
-const MAX_WEIGHT_AT_MS = 10000;
+const MIN_AVG_HESITATION_MS = 4500;
+const MAX_WEIGHT_AT_MS = 16000;
 
 interface HesitationRow {
   uid: string;
@@ -35,7 +35,7 @@ export class HesitationMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, avgHesitation / MAX_WEIGHT_AT_MS),
+        weight: Math.min(0.45, avgHesitation / MAX_WEIGHT_AT_MS),
         details: `Gemiddelde aarzeltijd van ${avgHesitation} ms over ${row.message_count} berichten`
       };
     });

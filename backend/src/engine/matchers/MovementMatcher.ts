@@ -34,7 +34,7 @@ export class MovementMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, zoneCount / TOTAL_ZONES),
+        weight: Math.min(0.35, zoneCount / TOTAL_ZONES),
         details: `Actief in ${zoneCount} verschillende zones binnen 24 uur`
       };
     });
