@@ -1,5 +1,6 @@
 import { useMessages } from "./useMessages";
 import { useResidents } from "./useResidents";
+import { useRiskOverview } from "./useRiskOverview";
 import { useSession } from "./useSession";
 import { useSystemLog } from "./useSystemLog";
 import { useZones } from "./useZones";
@@ -18,5 +19,6 @@ export function useOverdehegData(): {
   const actions = useMessages();
   useResidents();
   useSystemLog();
+  useRiskOverview();
   return actions;
 }

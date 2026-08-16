@@ -77,3 +77,63 @@ export interface ApiError {
 export interface DialoguePromptsResponse {
   prompts: string[];
 }
+
+/** Soorten correlatiesignalen uit de engine. */
+export type CorrelationMatchType =
+  | "hesitation"
+  | "edit_pattern"
+  | "deletion"
+  | "movement"
+  | "keyword";
+
+/** Totalen bovenaan het risicopaneel. */
+export interface RiskTotals {
+  residentCount: number;
+  averageRisk: number;
+  flaggedCount: number;
+  criticalCount: number;
+  messageCount: number;
+  pingCount: number;
+  correlationCount: number;
+}
+
+/** Risico-samenvatting van één zone. */
+export interface ZoneRisk {
+  zoneId: number;
+  zoneName: string;
+  residentCount: number;
+  averageRisk: number;
+  maxRisk: number;
+  flaggedCount: number;
+}
+
+/** Bewoner in de risicoranking. */
+export interface ResidentRisk {
+  uid: string;
+  zoneId: number;
+  zoneName: string;
+  riskScore: number;
+  flagLevel: FlagLevel;
+}
+
+/** Aantal correlaties per matchtype. */
+export interface SignalStat {
+  matchType: CorrelationMatchType;
+  count: number;
+  totalWeight: number;
+}
+
+/** Aantal bewoners per vlagniveau. */
+export interface FlagStat {
+  level: FlagLevel;
+  count: number;
+}
+
+/** Volledig risico-overzicht voor visualisatie. */
+export interface RiskOverview {
+  totals: RiskTotals;
+  zones: ZoneRisk[];
+  residents: ResidentRisk[];
+  signals: SignalStat[];
+  flags: FlagStat[];
+}

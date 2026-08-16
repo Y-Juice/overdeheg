@@ -6,6 +6,7 @@ import {
   Message,
   PingView,
   ResidentView,
+  RiskOverview,
   SystemLogEntry,
   Zone
 } from "../types";
@@ -81,4 +82,9 @@ export function fetchDialoguePrompts(): Promise<string[]> {
   return request<DialoguePromptsResponse>("/api/dialogue/prompts").then(
     (body) => body.prompts
   );
+}
+
+/** Haalt het geaggregeerde risico-overzicht voor visualisatie op. */
+export function fetchRiskOverview(): Promise<RiskOverview> {
+  return request<RiskOverview>("/api/risk/overview");
 }
