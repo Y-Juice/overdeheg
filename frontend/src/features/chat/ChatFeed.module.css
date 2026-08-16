@@ -1,22 +1,24 @@
 .wrap {
-  margin-top: 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #9a9a9a;
-  margin-bottom: 0.35rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
 }
 
 .subtitle {
   font-size: 0.8rem;
-  color: #7a7a7a;
-  margin-bottom: 0.6rem;
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-sm);
 }
 
 .waiting {
-  color: #7a7a7a;
+  color: var(--color-text-dim);
   font-size: 0.85rem;
 }
