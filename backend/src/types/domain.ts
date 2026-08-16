@@ -94,7 +94,9 @@ export interface SystemLogEntry {
 export interface MessageAnalysis {
   keywords: string[];
   chargedTerms: string[];
+  civicTerms: string[];
   suspicionScore: number;
+  civicScore: number;
 }
 
 /** Een gevonden verband dat nog niet in de database staat. */

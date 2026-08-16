@@ -23,6 +23,7 @@ export class DeletionMatcher implements CorrelationMatcher {
               COUNT(*) FILTER (WHERE is_deleted) AS deleted_count,
               COUNT(*) AS total_count
        FROM messages
+       WHERE created_at > now() - interval '24 hours'
        GROUP BY uid
        HAVING COUNT(*) FILTER (WHERE is_deleted) >= 1`
     );

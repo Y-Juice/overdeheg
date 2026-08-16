@@ -24,6 +24,7 @@ export class HesitationMatcher implements CorrelationMatcher {
     const result = await this.db.query<HesitationRow>(
       `SELECT uid, AVG(hesitation_ms) AS avg_hesitation, COUNT(*) AS message_count
        FROM messages
+       WHERE created_at > now() - interval '24 hours'
        GROUP BY uid
        HAVING AVG(hesitation_ms) >= $1`,
       [MIN_AVG_HESITATION_MS]
