@@ -1,5 +1,5 @@
 import { Message } from "../../types";
-import { formatMessageTime, shortUid } from "./chatUtils";
+import { displayUsername, formatMessageTime } from "./chatUtils";
 import styles from "./MessageItem.module.css";
 
 interface MessageItemProps {
@@ -13,7 +13,7 @@ interface MessageItemProps {
  * en een verwijderknop voor eigen berichten.
  */
 export function MessageItem({ message, isOwn, onDelete }: MessageItemProps) {
-  const authorLabel = isOwn ? "Jij" : `anoniem ${shortUid(message.uid)}`;
+  const authorLabel = isOwn ? "Jij" : displayUsername(message.uid);
 
   return (
     <article className={styles.item}>
