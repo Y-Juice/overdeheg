@@ -1,29 +1,30 @@
 .shape {
   width: 0.7rem;
   height: 0.7rem;
-  border: 1px solid #111;
+  border: 1px solid rgba(10, 24, 18, 0.45);
 }
 
 .laag {
-  background-color: #6a8f7a;
+  background-color: #7fbf96;
   border-radius: 50%;
 }
 
 .verhoogd {
   background-color: #d4a017;
   transform: rotate(45deg);
+  border-radius: 0.15rem;
 }
 
 .kritiek {
   width: 0;
   height: 0;
   border: 0.4rem solid transparent;
-  border-bottom-color: #e23b3b;
+  border-bottom-color: #e05a4f;
   background-color: transparent;
 }
 
 .own {
-  outline: 2px solid #eee;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 

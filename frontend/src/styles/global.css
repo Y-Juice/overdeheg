@@ -15,7 +15,10 @@ body,
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-bg);
+  background:
+    radial-gradient(circle at top right, rgba(36, 85, 63, 0.08), transparent 42%),
+    radial-gradient(circle at bottom left, rgba(20, 53, 40, 0.06), transparent 38%),
+    var(--color-bg);
   color: var(--color-text);
   line-height: 1.45;
 }
@@ -32,14 +35,15 @@ button {
 }
 
 ::-webkit-scrollbar {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.4rem;
+  height: 0.4rem;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--color-border-strong);
+  border-radius: var(--radius-pill);
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--color-bg-deep);
+  background-color: transparent;
 }
