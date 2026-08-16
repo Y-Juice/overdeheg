@@ -2,9 +2,12 @@ import { useCallback, useEffect } from "react";
 import { useAppStore } from "../stores/appStore";
 import { createMessage, deleteMessage, fetchMessages } from "../utils/api";
 
+const REFRESH_MS = 2000;
+
 /**
  * Laadt de berichten van de actieve zone en biedt functies
  * om een bericht te plaatsen of te verwijderen.
+ * Vernieuwt periodiek zodat vertraagde dialoogantwoorden zichtbaar worden.
  */
 export function useMessages(): {
   postMessage: (content: string, hesitationMs: number, editCount: number) => Promise<void>;
@@ -28,6 +31,10 @@ export function useMessages(): {
 
   useEffect(() => {
     void load();
+    const timer = window.setInterval(() => {
+      void load();
+    }, REFRESH_MS);
+    return () => window.clearInterval(timer);
   }, [load]);
 
   const postMessage = useCallback(
