@@ -2,6 +2,7 @@ import {
   ApiError,
   CreateMessagePayload,
   CreatePingPayload,
+  DialoguePromptsResponse,
   Message,
   PingView,
   ResidentView,
@@ -73,4 +74,11 @@ export function fetchResidents(zoneId: number): Promise<ResidentView[]> {
 /** Haalt de nieuwste regels uit het systeemlog op. */
 export function fetchSystemLog(limit = 50): Promise<SystemLogEntry[]> {
   return request<SystemLogEntry[]>(`/api/system-log?limit=${limit}`);
+}
+
+/** Haalt de startvragen voor vertakte buurtgesprekken op. */
+export function fetchDialoguePrompts(): Promise<string[]> {
+  return request<DialoguePromptsResponse>("/api/dialogue/prompts").then(
+    (body) => body.prompts
+  );
 }
