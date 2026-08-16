@@ -68,6 +68,8 @@ export class MessageService {
         "waarschuwing",
         `Bericht ${row.id} bevat beladen termen: ${analysis.chargedTerms.join(", ")}`
       );
+    } else if (analysis.civicScore > 0) {
+      await this.lowerRiskForCivicMessage(request.uid, analysis.civicScore);
     }
 
     // Dialoog draait op de achtergrond, zodat antwoorden met echte pauzes binnenkomen.
@@ -138,6 +140,28 @@ export class MessageService {
     const row = updated.rows[0];
     await this.systemLog.log("info", `Bericht ${row.id} is verwijderd`);
     return this.toView(row);
+  }
+
+  /** Verlaagt de risicoscore meteen bij een vriendelijk bericht. */
+  private async lowerRiskForCivicMessage(
+    uid: string,
+    civicScore: number
+  ): Promise<void> {
+    const updated = await this.db.query<{ risk_score: number }>(
+      `UPDATE residents
+       SET risk_score = GREATEST(0, risk_score - $1)
+       WHERE uid = $2
+       RETURNING risk_score`,
+      [civicScore, uid]
+    );
+    const nextScore = updated.rows[0]?.risk_score;
+    if (nextScore === undefined) {
+      return;
+    }
+    await this.systemLog.log(
+      "info",
+      `Vriendelijk bericht: risico van bewoner ${uid.slice(0, 8)} daalt naar ${nextScore.toFixed(2)}`
+    );
   }
 
   /** Zet een databasrij om naar de publieke berichtvorm. */

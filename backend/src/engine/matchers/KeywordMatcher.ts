@@ -24,7 +24,9 @@ export class KeywordMatcher implements CorrelationMatcher {
 
   async findMatches(): Promise<CorrelationMatch[]> {
     const result = await this.db.query<ContentRow>(
-      "SELECT uid, content FROM messages WHERE is_deleted = FALSE"
+      `SELECT uid, content FROM messages
+       WHERE is_deleted = FALSE
+         AND created_at > now() - interval '24 hours'`
     );
 
     const termsPerResident = new Map<string, Set<string>>();
