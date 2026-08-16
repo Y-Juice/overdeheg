@@ -1,16 +1,44 @@
+@import "./tokens.css";
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #111;
-  color: #eee;
-  min-height: 100vh;
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
-main {
-  padding: 2rem;
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 0.45rem;
+  height: 0.45rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-strong);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--color-bg-deep);
 }
