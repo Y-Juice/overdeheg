@@ -1,30 +1,30 @@
 /**
  * Types voor vertakte buurtgesprekken.
  * Een vraag heeft meerdere mogelijke antwoorden van verschillende sprekers;
- * sommige antwoorden eindigen het gesprek, andere leiden tot een vervolg.
+ * daarna kunnen NPC's onderling verder praten in een thread.
  */
 
-/** Wie de vervolgreegel zegt: de oorspronkelijke vragensteller of een NPC. */
-export type FollowUpSpeaker = "opener" | "npc";
+/** Wie een regel zegt: de oorspronkelijke vragensteller of een NPC. */
+export type DialogueSpeaker = "opener" | "npc";
 
-/** Eén mogelijk antwoord op een vraag. */
+/** Eén regel in een gespreksthread. */
+export interface DialogueLine {
+  content: string;
+  speaker: DialogueSpeaker;
+  /** Alleen nodig als speaker "npc" is. */
+  npcIndex?: number;
+}
+
+/** Eén mogelijk antwoordpad op een vraag. */
 export interface DialogueAnswer {
   /** Unieke sleutel binnen de boom, bv. "b" of "c". */
   id: string;
-  /** De tekst die deze bewoner plaatst. */
+  /** Eerste antwoordtekst. */
   content: string;
-  /** Welke NPC-index (0..n) dit antwoord plaatst. */
+  /** Welke NPC dit eerste antwoord plaatst. */
   npcIndex: number;
-  /** Optioneel vervolgbericht als dit antwoord gekozen wordt. */
-  followUp?: DialogueFollowUp;
-}
-
-/** Een automatisch vervolg na een gekozen antwoord. */
-export interface DialogueFollowUp {
-  content: string;
-  speaker: FollowUpSpeaker;
-  /** Alleen nodig als speaker "npc" is. */
-  npcIndex?: number;
+  /** Extra berichten daarna (vaak NPC's onderling, soms de vragensteller). */
+  thread?: DialogueLine[];
 }
 
 /** Een gespreksonderwerp met een startvraag en vertakte antwoorden. */
@@ -37,9 +37,14 @@ export interface DialogueTree {
   answers: DialogueAnswer[];
 }
 
+/** Een kort NPC-onderling gesprek zonder gebruikersvraag. */
+export interface AmbientChat {
+  id: string;
+  lines: Array<{ content: string; npcIndex: number }>;
+}
+
 /** Een bericht dat de dialoogservice in de database wil zetten. */
 export interface DialoguePost {
   uid: string;
   content: string;
-  delaySeconds: number;
 }
