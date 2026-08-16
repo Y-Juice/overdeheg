@@ -1,12 +1,13 @@
 import { ChatFeed } from "./features/chat/ChatFeed";
 import { ZoneMap } from "./features/map/ZoneMap";
+import { SystemLogPanel } from "./features/systemlog/SystemLogPanel";
 import { useOverdehegData } from "./hooks/useOverdehegData";
 import { useAppStore } from "./stores/appStore";
 import styles from "./App.module.css";
 
 /**
  * Hoofdcomponent van Overdeheg.
- * Laadt data via hooks en toont de wijkkaart en de buurtchat.
+ * Laadt data via hooks en toont kaart, chat en systeemlog.
  */
 function App() {
   const { postMessage, removeMessage } = useOverdehegData();
@@ -22,6 +23,7 @@ function App() {
       {error ? <p className={styles.error}>{error}</p> : null}
       <ZoneMap />
       <ChatFeed postMessage={postMessage} removeMessage={removeMessage} />
+      <SystemLogPanel />
     </main>
   );
 }
