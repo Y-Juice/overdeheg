@@ -13,7 +13,10 @@ INSERT INTO zones (name, grid_x, grid_y) VALUES
 INSERT INTO residents (uid, zone_id) VALUES
   ('a1000000-0000-4000-8000-000000000001', 1),
   ('a1000000-0000-4000-8000-000000000002', 2),
-  ('a1000000-0000-4000-8000-000000000003', 5);
+  ('a1000000-0000-4000-8000-000000000003', 5),
+  ('b2000000-0000-4000-8000-000000000001', 1),
+  ('b2000000-0000-4000-8000-000000000002', 1),
+  ('b2000000-0000-4000-8000-000000000003', 1);
 
 INSERT INTO messages (uid, zone_id, content, latitude, longitude, hesitation_ms, edit_count) VALUES
   ('a1000000-0000-4000-8000-000000000001', 1, 'Heeft iemand die witte bus op de hoek zien staan?', 52.0011, 5.1003, 4200, 1),
