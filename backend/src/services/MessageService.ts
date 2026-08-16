@@ -70,13 +70,18 @@ export class MessageService {
       );
     }
 
-    await this.dialogue.reactToMessage({
-      openerUid: request.uid,
-      zoneId,
-      content: request.content,
-      latitude: request.latitude,
-      longitude: request.longitude
-    });
+    // Dialoog draait op de achtergrond, zodat antwoorden met echte pauzes binnenkomen.
+    void this.dialogue
+      .reactToMessage({
+        openerUid: request.uid,
+        zoneId,
+        content: request.content,
+        latitude: request.latitude,
+        longitude: request.longitude
+      })
+      .catch((error) => {
+        console.error("Dialoogreactie mislukt", error);
+      });
 
     return this.toView(row);
   }

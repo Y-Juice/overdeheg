@@ -14,6 +14,10 @@ const NPC_UIDS = [
   "b2000000-0000-4000-8000-000000000003"
 ] as const;
 
+/** Minimale en maximale denkpauze tussen berichten (ms). */
+const MIN_REPLY_DELAY_MS = 1500;
+const MAX_REPLY_DELAY_MS = 5500;
+
 interface ZoneCoords {
   latitude: number;
   longitude: number;
@@ -21,8 +25,8 @@ interface ZoneCoords {
 
 /**
  * Speelt vertakte buurtgesprekken af nadat iemand een startvraag plaatst.
- * Kiest willekeurig één antwoordpad van een NPC; sommige paden stoppen,
- * andere krijgen nog een automatisch vervolg.
+ * Kiest willekeurig één antwoordpad van een NPC; tussen berichten zit
+ * een willekeurige pauze alsof iemand echt typt.
  */
 export class DialogueService {
   constructor(
@@ -37,8 +41,8 @@ export class DialogueService {
   }
 
   /**
-   * Zoekt een passende gespreksboom en plaatst het gekozen antwoordpad.
-   * NPC-berichten worden echt in de database gezet.
+   * Zoekt een passende gespreksboom en plaatst het gekozen antwoordpad
+   * met een realistische pauze tussen elk bericht.
    */
   async reactToMessage(params: {
     openerUid: string;
@@ -57,16 +61,14 @@ export class DialogueService {
     const posts = this.buildPosts(params.openerUid, answer);
     const coords = { latitude: params.latitude, longitude: params.longitude };
 
-    let delay = 2;
     for (const post of posts) {
+      await this.wait(this.randomDelayMs());
       await this.insertNpcMessage({
         uid: post.uid,
         zoneId: params.zoneId,
         content: post.content,
-        coords,
-        delaySeconds: delay
+        coords
       });
-      delay += 2;
     }
 
     await this.systemLog.log(
@@ -74,6 +76,21 @@ export class DialogueService {
       `Dialoog ${tree.id}: antwoordpad ${answer.id} gekozen (${posts.length} vervolgberichten)`
     );
     return posts.length;
+  }
+
+  /** Wacht een willekeurige denkpauze. */
+  private wait(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  /** Kiest een willekeurige pauze tussen de ingestelde grenzen. */
+  private randomDelayMs(): number {
+    return (
+      MIN_REPLY_DELAY_MS +
+      Math.floor(Math.random() * (MAX_REPLY_DELAY_MS - MIN_REPLY_DELAY_MS + 1))
+    );
   }
 
   /** Normaliseert tekst voor het vergelijken van startvragen. */
@@ -115,7 +132,7 @@ export class DialogueService {
       {
         uid: this.npcUid(answer.npcIndex),
         content: answer.content,
-        delaySeconds: 2
+        delaySeconds: 0
       }
     ];
 
@@ -132,7 +149,7 @@ export class DialogueService {
     posts.push({
       uid: followUid,
       content: follow.content,
-      delaySeconds: 4
+      delaySeconds: 0
     });
     return posts;
   }
@@ -161,18 +178,17 @@ export class DialogueService {
     }
   }
 
-  /** Schrijft een NPC- of vervolgbericht weg met een kleine tijdverschuiving. */
+  /** Schrijft een NPC- of vervolgbericht weg op het moment van plaatsen. */
   private async insertNpcMessage(params: {
     uid: string;
     zoneId: number;
     content: string;
     coords: ZoneCoords;
-    delaySeconds: number;
   }): Promise<void> {
     await this.db.query(
       `INSERT INTO messages
-         (uid, zone_id, content, latitude, longitude, hesitation_ms, edit_count, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, now() + ($8 || ' seconds')::interval)`,
+         (uid, zone_id, content, latitude, longitude, hesitation_ms, edit_count)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [
         params.uid,
         params.zoneId,
@@ -180,8 +196,7 @@ export class DialogueService {
         params.coords.latitude,
         params.coords.longitude,
         800 + Math.floor(Math.random() * 4000),
-        Math.floor(Math.random() * 3),
-        params.delaySeconds
+        Math.floor(Math.random() * 3)
       ]
     );
   }
