@@ -81,7 +81,9 @@ correlationEngine.start(CORRELATION_INTERVAL_MS);
 
 const threatModelService = new ThreatModelService(
   pool,
-  new FlagService(pool, systemLogService)
+  new FlagService(pool, systemLogService),
+  nlpService,
+  systemLogService
 );
 threatModelService.start(THREAT_MODEL_INTERVAL_MS);
 
