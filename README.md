@@ -86,5 +86,3 @@ Features zitten op branches zoals `feat/...` en worden naar `main` gemerged. Com
 Voor structuuradvies (mappen, services, hoe het niet te ingewikkeld te maken) is deze ChatGPT-chat gebruikt:
 
 https://chatgpt.com/share/6a814aa7-e3ec-83ed-8feb-280ecb3c1ee6
-
-Dit is de enige AI-bron die voor dit project is gebruikt.
