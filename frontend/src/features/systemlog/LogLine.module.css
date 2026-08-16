@@ -1,0 +1,35 @@
+.line {
+  display: grid;
+  grid-template-columns: 4.8rem 7.5rem 1fr;
+  gap: 0.55rem;
+  padding: 0.15rem 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.time {
+  color: #6e7a6e;
+}
+
+.level {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.info {
+  color: #7ab88a;
+}
+
+.waarschuwing {
+  color: #d4a017;
+}
+
+.alarm {
+  color: #e23b3b;
+}
+
+.message {
+  color: #c8d0c8;
+}
