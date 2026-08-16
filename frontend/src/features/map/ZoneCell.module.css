@@ -1,8 +1,8 @@
 .cell {
   position: relative;
   min-height: 8.5rem;
-  border: 1px solid #2a2a2a;
-  background-color: #161816;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-elevated);
   overflow: hidden;
   cursor: pointer;
   text-align: left;
@@ -13,7 +13,7 @@
 
 .cell:hover,
 .hovered {
-  border-color: #7a7a7a;
+  border-color: var(--color-border-hover);
 }
 
 .selected {
@@ -44,7 +44,7 @@
   display: block;
   margin-top: 0.15rem;
   font-size: 0.65rem;
-  color: #8fbf9a;
+  color: var(--color-accent);
 }
 
 .residents {

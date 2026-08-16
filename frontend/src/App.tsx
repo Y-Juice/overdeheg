@@ -1,13 +1,13 @@
+import { AppShell } from "./components/AppShell";
 import { ChatFeed } from "./features/chat/ChatFeed";
 import { ZoneMap } from "./features/map/ZoneMap";
 import { SystemLogPanel } from "./features/systemlog/SystemLogPanel";
 import { useOverdehegData } from "./hooks/useOverdehegData";
 import { useAppStore } from "./stores/appStore";
-import styles from "./App.module.css";
 
 /**
  * Hoofdcomponent van Overdeheg.
- * Laadt data via hooks en toont kaart, chat en systeemlog.
+ * Laadt data via hooks en zet alles in de app-shell.
  */
 function App() {
   const { postMessage, removeMessage } = useOverdehegData();
@@ -15,16 +15,13 @@ function App() {
   const error = useAppStore((state) => state.error);
 
   return (
-    <main>
-      <h1>Overdeheg</h1>
-      <p className={styles.status}>
-        Actieve zone: {session.zoneName ?? "wordt bepaald"}
-      </p>
-      {error ? <p className={styles.error}>{error}</p> : null}
-      <ZoneMap />
-      <ChatFeed postMessage={postMessage} removeMessage={removeMessage} />
-      <SystemLogPanel />
-    </main>
+    <AppShell
+      zoneName={session.zoneName}
+      error={error}
+      map={<ZoneMap />}
+      chat={<ChatFeed postMessage={postMessage} removeMessage={removeMessage} />}
+      systemLog={<SystemLogPanel />}
+    />
   );
 }
 

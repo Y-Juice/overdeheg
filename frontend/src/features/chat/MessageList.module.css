@@ -1,15 +1,16 @@
 .list {
   display: flex;
   flex-direction: column;
-  min-height: 12rem;
-  max-height: 18rem;
+  flex: 1;
+  min-height: 10rem;
+  max-height: 16rem;
   overflow-y: auto;
-  border: 1px solid #2a2a2a;
-  background-color: #121412;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
 }
 
 .empty {
   padding: 1rem 0.75rem;
-  color: #7a7a7a;
+  color: var(--color-text-dim);
   font-size: 0.85rem;
 }
