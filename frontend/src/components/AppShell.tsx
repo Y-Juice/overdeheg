@@ -12,7 +12,7 @@ interface AppShellProps {
 
 /**
  * App-shell van Overdeheg: header plus vier panelen
- * (kaart, chat, systeemlog, risicoanalyse) op een dark theme.
+ * (kaart, chat, risicoanalyse onder de kaart, systeemlog) op een dark theme.
  */
 export function AppShell({
   zoneName,
