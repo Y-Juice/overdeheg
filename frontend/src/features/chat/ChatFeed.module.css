@@ -1,0 +1,22 @@
+.wrap {
+  margin-top: 1.25rem;
+}
+
+.title {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: #7a7a7a;
+  margin-bottom: 0.6rem;
+}
+
+.waiting {
+  color: #7a7a7a;
+  font-size: 0.85rem;
+}
