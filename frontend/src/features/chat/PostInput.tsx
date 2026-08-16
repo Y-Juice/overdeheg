@@ -27,6 +27,9 @@ export function PostInput({ disabled, onSubmit }: PostInputProps) {
   };
 
   const handleChange = (value: string): void => {
+    if (focusStartedAt.current === null) {
+      focusStartedAt.current = Date.now();
+    }
     if (hasTyped.current) {
       editCount.current += 1;
     } else if (value.trim().length > 0) {
