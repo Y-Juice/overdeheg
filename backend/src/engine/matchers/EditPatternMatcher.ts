@@ -2,8 +2,8 @@ import { Pool } from "pg";
 import { CorrelationMatch } from "../../types/domain";
 import { CorrelationMatcher } from "./CorrelationMatcher";
 
-const MIN_AVG_EDITS = 1.5;
-const MAX_WEIGHT_AT_EDITS = 5;
+const MIN_AVG_EDITS = 2.5;
+const MAX_WEIGHT_AT_EDITS = 8;
 
 interface EditRow {
   uid: string;
@@ -35,7 +35,7 @@ export class EditPatternMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, avgEdits / MAX_WEIGHT_AT_EDITS),
+        weight: Math.min(0.4, avgEdits / MAX_WEIGHT_AT_EDITS),
         details: `Gemiddeld ${avgEdits.toFixed(1)} bewerkingen per bericht over ${row.message_count} berichten`
       };
     });

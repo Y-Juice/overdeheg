@@ -25,7 +25,7 @@ export class DeletionMatcher implements CorrelationMatcher {
        FROM messages
        WHERE created_at > now() - interval '24 hours'
        GROUP BY uid
-       HAVING COUNT(*) FILTER (WHERE is_deleted) >= 1`
+       HAVING COUNT(*) FILTER (WHERE is_deleted) >= 2`
     );
 
     return result.rows.map((row) => {
@@ -34,7 +34,7 @@ export class DeletionMatcher implements CorrelationMatcher {
       return {
         uid: row.uid,
         matchType: this.matchType,
-        weight: Math.min(1, deleted / total),
+        weight: Math.min(0.4, (deleted / total) * 0.7),
         details: `${deleted} van de ${total} berichten verwijderd`
       };
     });
