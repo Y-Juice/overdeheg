@@ -1,3 +1,5 @@
+import { USERNAME_BASES } from "./usernameBases";
+
 /**
  * Formatteert een ISO-tijdstempel naar een korte Nederlandse weergave.
  */
@@ -13,8 +15,24 @@ export function formatMessageTime(isoDate: string): string {
 }
 
 /**
- * Verkort een UID tot een anonieme weergave in de chat.
+ * Zet een UID om naar een vast getal, zodat dezelfde bewoner
+ * steeds dezelfde weergavenaam krijgt.
  */
-export function shortUid(uid: string): string {
-  return uid.slice(0, 8);
+function hashUid(uid: string): number {
+  let hash = 0;
+  for (let index = 0; index < uid.length; index += 1) {
+    hash = (hash * 31 + uid.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+}
+
+/**
+ * Geeft een realistisch pseudoniem voor een UID, zoals vanessa64 of mrMarcus485.
+ * De naam is deterministisch: dezelfde UID houdt altijd dezelfde naam.
+ */
+export function displayUsername(uid: string): string {
+  const hash = hashUid(uid);
+  const base = USERNAME_BASES[hash % USERNAME_BASES.length];
+  const number = (hash % 900) + 1;
+  return `${base}${number}`;
 }
