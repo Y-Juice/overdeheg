@@ -12,7 +12,9 @@ export type CorrelationMatchType =
   | "edit_pattern"
   | "deletion"
   | "movement"
-  | "keyword";
+  | "keyword"
+  | "night_activity"
+  | "burst";
 
 /** Risiconiveau van een vlag, wordt direct in de UI getoond. */
 export type FlagLevel = "laag" | "verhoogd" | "kritiek";

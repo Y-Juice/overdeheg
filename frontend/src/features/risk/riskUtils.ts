@@ -25,7 +25,24 @@ export function signalLabel(matchType: CorrelationMatchType): string {
   if (matchType === "movement") {
     return "Beweging";
   }
+  if (matchType === "night_activity") {
+    return "Nachtactiviteit";
+  }
+  if (matchType === "burst") {
+    return "Berichtburst";
+  }
   return "Sleutelwoorden";
+}
+
+/** Nederlandse label voor een risicotrend. */
+export function trendLabel(trend: "stijgend" | "stabiel" | "dalend"): string {
+  if (trend === "stijgend") {
+    return "stijgend";
+  }
+  if (trend === "dalend") {
+    return "dalend";
+  }
+  return "stabiel";
 }
 
 /** CSS-klasse-achtervoegsel voor een vlagniveau. */

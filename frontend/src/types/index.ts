@@ -84,7 +84,9 @@ export type CorrelationMatchType =
   | "edit_pattern"
   | "deletion"
   | "movement"
-  | "keyword";
+  | "keyword"
+  | "night_activity"
+  | "burst";
 
 /** Totalen bovenaan het risicopaneel. */
 export interface RiskTotals {
@@ -129,6 +131,52 @@ export interface FlagStat {
   count: number;
 }
 
+/** Voorspeld risico van een zone. */
+export interface ZoneForecast {
+  zoneId: number;
+  zoneName: string;
+  currentRisk: number;
+  predictedRisk: number;
+  trend: "stijgend" | "stabiel" | "dalend";
+  reason: string;
+}
+
+/** Patrouilleadvies voor een zone. */
+export interface PatrolAdvice {
+  zoneId: number;
+  zoneName: string;
+  predictedRisk: number;
+  action: string;
+}
+
+/** Bewoner op de watchlist. */
+export interface WatchItem {
+  uid: string;
+  zoneName: string;
+  riskScore: number;
+  flagLevel: FlagLevel;
+  escalateChance: number;
+  reason: string;
+}
+
+/** Verwacht incident. */
+export interface PredictedIncident {
+  title: string;
+  zoneName: string;
+  likelihood: number;
+  detail: string;
+}
+
+/** Predictieve politie-aggregatie. */
+export interface Predictions {
+  hotZoneCount: number;
+  watchCount: number;
+  zones: ZoneForecast[];
+  patrols: PatrolAdvice[];
+  watchlist: WatchItem[];
+  incidents: PredictedIncident[];
+}
+
 /** Volledig risico-overzicht voor visualisatie. */
 export interface RiskOverview {
   totals: RiskTotals;
@@ -136,4 +184,5 @@ export interface RiskOverview {
   residents: ResidentRisk[];
   signals: SignalStat[];
   flags: FlagStat[];
+  predictions: Predictions;
 }

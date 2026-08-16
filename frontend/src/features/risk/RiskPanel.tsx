@@ -6,13 +6,14 @@ import {
   flagTone,
   formatRiskPercent,
   riskTone,
-  signalLabel
+  signalLabel,
+  trendLabel
 } from "./riskUtils";
 import styles from "./RiskPanel.module.css";
 
 /**
  * Visualisatiepaneel met risico per bewoner, per zone,
- * correlatiesignalen en vlagverdeling.
+ * correlatiesignalen, vlaggen en predictieve politie.
  */
 export function RiskPanel() {
   const overview = useAppStore((state) => state.riskOverview);
@@ -27,6 +28,14 @@ export function RiskPanel() {
   }
 
   const { totals, zones, residents, signals, flags } = overview;
+  const predictions = overview.predictions ?? {
+    hotZoneCount: 0,
+    watchCount: 0,
+    zones: [],
+    patrols: [],
+    watchlist: [],
+    incidents: []
+  };
   const maxSignalWeight = Math.max(
     1,
     ...signals.map((signal) => signal.totalWeight)
@@ -38,7 +47,7 @@ export function RiskPanel() {
       <div>
         <h2 className={styles.title}>Risicoanalyse</h2>
         <p className={styles.subtitle}>
-          Live aggregatie uit scores, zones, correlaties en vlaggen
+          Live scores plus voorspelde patrouilles, watchlist en incidenten
         </p>
       </div>
 
@@ -65,6 +74,101 @@ export function RiskPanel() {
             {totals.criticalCount}
           </span>
         </div>
+        <div className={styles.kpi}>
+          <span className={styles.kpiLabel}>Patrouilles</span>
+          <span className={`${styles.kpiValue} ${styles.kpiWarn}`}>
+            {predictions.hotZoneCount}
+          </span>
+        </div>
+        <div className={styles.kpi}>
+          <span className={styles.kpiLabel}>Watchlist</span>
+          <span className={`${styles.kpiValue} ${styles.kpiDanger}`}>
+            {predictions.watchCount}
+          </span>
+        </div>
+      </div>
+
+      <div className={styles.predictGrid}>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Patrouilleadvies</h3>
+          <div className={styles.list}>
+            {predictions.patrols.length === 0 ? (
+              <p className={styles.empty}>Geen zone vraagt nu om extra inzet</p>
+            ) : (
+              predictions.patrols.map((patrol) => (
+                <div key={patrol.zoneId} className={styles.row}>
+                  <div>
+                    <div className={styles.label}>{patrol.zoneName}</div>
+                    <div className={styles.meta}>{patrol.action}</div>
+                  </div>
+                  <div className={styles.track}>
+                    <div
+                      className={`${styles.fill} ${styles[riskTone(patrol.predictedRisk)]}`}
+                      style={{ width: barWidth(patrol.predictedRisk) }}
+                    />
+                  </div>
+                  <span className={styles.value}>
+                    {formatRiskPercent(patrol.predictedRisk)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Watchlist</h3>
+          <div className={styles.list}>
+            {predictions.watchlist.length === 0 ? (
+              <p className={styles.empty}>Niemand nabij escalatie</p>
+            ) : (
+              predictions.watchlist.map((item) => (
+                <div key={item.uid} className={styles.row}>
+                  <div>
+                    <div className={styles.label}>{displayUsername(item.uid)}</div>
+                    <div className={styles.meta}>
+                      {item.zoneName} · {item.reason}
+                    </div>
+                  </div>
+                  <div className={styles.track}>
+                    <div
+                      className={`${styles.fill} ${styles[flagTone(item.flagLevel)]}`}
+                      style={{ width: barWidth(item.escalateChance) }}
+                    />
+                  </div>
+                  <span className={styles.value}>
+                    {formatRiskPercent(item.escalateChance)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Verwachte incidenten</h3>
+          <div className={styles.list}>
+            {predictions.incidents.map((incident) => (
+              <div key={incident.title} className={styles.row}>
+                <div>
+                  <div className={styles.label}>{incident.title}</div>
+                  <div className={styles.meta}>
+                    {incident.zoneName} · {incident.detail}
+                  </div>
+                </div>
+                <div className={styles.track}>
+                  <div
+                    className={`${styles.fill} ${styles[riskTone(incident.likelihood)]}`}
+                    style={{ width: barWidth(incident.likelihood) }}
+                  />
+                </div>
+                <span className={styles.value}>
+                  {formatRiskPercent(incident.likelihood)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className={styles.grid}>
@@ -74,12 +178,19 @@ export function RiskPanel() {
             {zones.length === 0 ? (
               <p className={styles.empty}>Nog geen zone-data</p>
             ) : (
-              zones.map((zone) => (
+              zones.map((zone) => {
+                const forecast = predictions.zones.find(
+                  (item) => item.zoneId === zone.zoneId
+                );
+                return (
                 <div key={zone.zoneId} className={styles.row}>
                   <div>
                     <div className={styles.label}>{zone.zoneName}</div>
                     <div className={styles.meta}>
                       {zone.residentCount} bewoners · {zone.flaggedCount} gemarkeerd
+                      {forecast
+                        ? ` · voorspeld ${formatRiskPercent(forecast.predictedRisk)} (${trendLabel(forecast.trend)})`
+                        : ""}
                     </div>
                   </div>
                   <div className={styles.track}>
@@ -92,7 +203,8 @@ export function RiskPanel() {
                     {formatRiskPercent(zone.averageRisk)}
                   </span>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
