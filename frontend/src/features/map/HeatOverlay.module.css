@@ -2,24 +2,25 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  border-radius: inherit;
 }
 
 .heat0 {
-  background-color: rgba(40, 80, 60, 0.15);
+  background-color: rgba(60, 120, 90, 0.12);
 }
 
 .heat1 {
-  background-color: rgba(80, 120, 50, 0.25);
+  background-color: rgba(90, 150, 80, 0.22);
 }
 
 .heat2 {
-  background-color: rgba(180, 150, 40, 0.35);
+  background-color: rgba(200, 160, 40, 0.3);
 }
 
 .heat3 {
-  background-color: rgba(200, 90, 30, 0.45);
+  background-color: rgba(210, 110, 35, 0.4);
 }
 
 .heat4 {
-  background-color: rgba(200, 30, 30, 0.55);
+  background-color: rgba(190, 45, 40, 0.5);
 }
