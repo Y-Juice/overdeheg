@@ -1,11 +1,13 @@
 import { Pool } from "pg";
 import {
+  AmbientChat,
   DialogueAnswer,
+  DialogueLine,
   DialoguePost,
   DialogueTree
 } from "../types/dialogue";
 import { SystemLogService } from "./SystemLogService";
-import { DIALOGUE_TREES } from "./dialogue/dialogueScripts";
+import { AMBIENT_CHATS, DIALOGUE_TREES } from "./dialogue/dialogueScripts";
 
 /** Vaste NPC-bewoners die antwoorden in de buurtchat kunnen plaatsen. */
 const NPC_UIDS = [
@@ -18,26 +20,49 @@ const NPC_UIDS = [
 const MIN_REPLY_DELAY_MS = 1500;
 const MAX_REPLY_DELAY_MS = 5500;
 
+/** Interval voor spontane NPC-gesprekken. */
+const AMBIENT_INTERVAL_MS = 35_000;
+
 interface ZoneCoords {
   latitude: number;
   longitude: number;
 }
 
+interface ZoneRow {
+  id: number;
+  grid_x: number;
+  grid_y: number;
+}
+
 /**
- * Speelt vertakte buurtgesprekken af nadat iemand een startvraag plaatst.
- * Kiest willekeurig één antwoordpad van een NPC; tussen berichten zit
- * een willekeurige pauze alsof iemand echt typt.
+ * Speelt vertakte buurtgesprekken af en laat NPC's ook onderling praten.
+ * Antwoorden op gebruikersvragen kunnen een thread hebben;
+ * daarnaast starten er periodiek spontane NPC-gesprekken.
  */
 export class DialogueService {
+  private ambientRunning = false;
+
   constructor(
     private readonly db: Pool,
     private readonly systemLog: SystemLogService,
-    private readonly trees: DialogueTree[] = DIALOGUE_TREES
+    private readonly trees: DialogueTree[] = DIALOGUE_TREES,
+    private readonly ambientChats: AmbientChat[] = AMBIENT_CHATS
   ) {}
 
   /** Geeft de startvragen die de frontend als snelle opties kan tonen. */
   listPrompts(): string[] {
     return this.trees.map((tree) => tree.prompt);
+  }
+
+  /**
+   * Start periodieke NPC-onderlinge gesprekken in willekeurige zones.
+   */
+  startAmbientChatter(intervalMs = AMBIENT_INTERVAL_MS): void {
+    setInterval(() => {
+      this.runAmbientChat().catch((error) => {
+        console.error("NPC-onderling gesprek mislukt", error);
+      });
+    }, intervalMs);
   }
 
   /**
@@ -61,21 +86,80 @@ export class DialogueService {
     const posts = this.buildPosts(params.openerUid, answer);
     const coords = { latitude: params.latitude, longitude: params.longitude };
 
+    await this.publishPosts(posts, params.zoneId, coords);
+
+    await this.systemLog.log(
+      "info",
+      `Dialoog ${tree.id}: antwoordpad ${answer.id} gekozen (${posts.length} berichten)`
+    );
+    return posts.length;
+  }
+
+  /** Kiest een spontaan NPC-gesprek en speelt het af in een zone. */
+  private async runAmbientChat(): Promise<void> {
+    if (this.ambientRunning || this.ambientChats.length === 0) {
+      return;
+    }
+
+    this.ambientRunning = true;
+    try {
+      const zones = await this.db.query<ZoneRow>(
+        "SELECT id, grid_x, grid_y FROM zones ORDER BY id"
+      );
+      if (zones.rows.length === 0) {
+        return;
+      }
+
+      const zone = zones.rows[Math.floor(Math.random() * zones.rows.length)];
+      const chat =
+        this.ambientChats[Math.floor(Math.random() * this.ambientChats.length)];
+
+      await this.ensureNpcsInZone(zone.id);
+      const coords = this.coordsForZone(zone.grid_x, zone.grid_y);
+      const posts: DialoguePost[] = chat.lines.map((line) => ({
+        uid: this.npcUid(line.npcIndex),
+        content: line.content
+      }));
+
+      await this.publishPosts(posts, zone.id, coords);
+      await this.systemLog.log(
+        "info",
+        `NPC-gesprek ${chat.id} in zone ${zone.id} (${posts.length} berichten)`
+      );
+    } finally {
+      this.ambientRunning = false;
+    }
+  }
+
+  /** Plaatst een reeks berichten met willekeurige pauzes ertussen. */
+  private async publishPosts(
+    posts: DialoguePost[],
+    zoneId: number,
+    coords: ZoneCoords
+  ): Promise<void> {
     for (const post of posts) {
       await this.wait(this.randomDelayMs());
       await this.insertNpcMessage({
         uid: post.uid,
-        zoneId: params.zoneId,
+        zoneId,
         content: post.content,
         coords
       });
     }
+  }
 
-    await this.systemLog.log(
-      "info",
-      `Dialoog ${tree.id}: antwoordpad ${answer.id} gekozen (${posts.length} vervolgberichten)`
-    );
-    return posts.length;
+  /** Schat GPS-coordinaten in het midden van een rastervak. */
+  private coordsForZone(gridX: number, gridY: number): ZoneCoords {
+    const latMin = 51.996;
+    const latMax = 52.004;
+    const lngMin = 5.096;
+    const lngMax = 5.111;
+    const colWidth = (lngMax - lngMin) / 3;
+    const rowHeight = (latMax - latMin) / 2;
+    return {
+      longitude: lngMin + (gridX + 0.5) * colWidth,
+      latitude: latMax - (gridY + 0.5) * rowHeight
+    };
   }
 
   /** Wacht een willekeurige denkpauze. */
@@ -126,32 +210,25 @@ export class DialogueService {
     return answers[index];
   }
 
-  /** Bouwt de berichtenreeks voor het gekozen pad. */
+  /** Bouwt de volledige berichtenreeks: eerste antwoord + thread. */
   private buildPosts(openerUid: string, answer: DialogueAnswer): DialoguePost[] {
     const posts: DialoguePost[] = [
       {
         uid: this.npcUid(answer.npcIndex),
-        content: answer.content,
-        delaySeconds: 0
+        content: answer.content
       }
     ];
 
-    if (!answer.followUp) {
-      return posts;
+    for (const line of answer.thread ?? []) {
+      posts.push(this.lineToPost(openerUid, line));
     }
-
-    const follow = answer.followUp;
-    const followUid =
-      follow.speaker === "opener"
-        ? openerUid
-        : this.npcUid(follow.npcIndex ?? 0);
-
-    posts.push({
-      uid: followUid,
-      content: follow.content,
-      delaySeconds: 0
-    });
     return posts;
+  }
+
+  private lineToPost(openerUid: string, line: DialogueLine): DialoguePost {
+    const uid =
+      line.speaker === "opener" ? openerUid : this.npcUid(line.npcIndex ?? 0);
+    return { uid, content: line.content };
   }
 
   private npcUid(index: number): string {

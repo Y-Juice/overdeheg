@@ -48,6 +48,8 @@ const messageService = new MessageService(
   dialogueService
 );
 
+dialogueService.startAmbientChatter();
+
 const zoneService = new ZoneService(pool);
 const locationService = new LocationService(
   pool,
