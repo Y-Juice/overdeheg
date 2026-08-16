@@ -1,3 +1,4 @@
+import { useDialoguePrompts } from "../../hooks/useDialoguePrompts";
 import { PostBehaviour } from "../../types/chat";
 import { MessageList } from "./MessageList";
 import { PostInput } from "./PostInput";
@@ -10,10 +11,11 @@ interface ChatFeedProps {
 }
 
 /**
- * Chatfeed van de actieve zone: berichtenlijst, soft delete en invoerveld.
- * Alle data komt uit de store; plaatsen en verwijderen gaan via de API.
+ * Chatfeed van de actieve zone: berichtenlijst, soft delete,
+ * snelle startvragen en vertakte buurtgesprekken.
  */
 export function ChatFeed({ postMessage, removeMessage }: ChatFeedProps) {
+  const prompts = useDialoguePrompts();
   const {
     messages,
     ownUid,
@@ -54,7 +56,11 @@ export function ChatFeed({ postMessage, removeMessage }: ChatFeedProps) {
         }}
       />
       {canPost ? (
-        <PostInput disabled={!zoneReady} onSubmit={handleSubmit} />
+        <PostInput
+          disabled={!zoneReady}
+          prompts={prompts}
+          onSubmit={handleSubmit}
+        />
       ) : (
         <p className={styles.waiting}>
           Je kunt alleen berichten plaatsen in je eigen zone.

@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { CreateMessageRequest, MessageView } from "../types/api";
+import { DialogueService } from "./DialogueService";
 import { NLPService } from "./NLPService";
 import { SystemLogService } from "./SystemLogService";
 import { ValidationError } from "./validation/ValidationError";
@@ -24,7 +25,8 @@ export class MessageService {
     private readonly db: Pool,
     private readonly validator: Validator<CreateMessageRequest>,
     private readonly nlp: NLPService,
-    private readonly systemLog: SystemLogService
+    private readonly systemLog: SystemLogService,
+    private readonly dialogue: DialogueService
   ) {}
 
   /**
@@ -67,6 +69,14 @@ export class MessageService {
         `Bericht ${row.id} bevat beladen termen: ${analysis.chargedTerms.join(", ")}`
       );
     }
+
+    await this.dialogue.reactToMessage({
+      openerUid: request.uid,
+      zoneId,
+      content: request.content,
+      latitude: request.latitude,
+      longitude: request.longitude
+    });
 
     return this.toView(row);
   }

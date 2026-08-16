@@ -72,3 +72,8 @@ export interface PingView {
 export interface ApiError {
   error: string;
 }
+
+/** Startvragen die een vertakt buurtgesprek kunnen beginnen. */
+export interface DialoguePromptsResponse {
+  prompts: string[];
+}

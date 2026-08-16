@@ -7,11 +7,13 @@ import { HesitationMatcher } from "./engine/matchers/HesitationMatcher";
 import { KeywordMatcher } from "./engine/matchers/KeywordMatcher";
 import { MovementMatcher } from "./engine/matchers/MovementMatcher";
 import { ThreatModelService } from "./engine/ThreatModelService";
+import { createDialogueRouter } from "./routes/dialogue";
 import { createMessagesRouter } from "./routes/messages";
 import { createPingsRouter } from "./routes/pings";
 import { createResidentsRouter } from "./routes/residents";
 import { createSystemLogRouter } from "./routes/systemLog";
 import { createZonesRouter } from "./routes/zones";
+import { DialogueService } from "./services/DialogueService";
 import { FlagService } from "./services/FlagService";
 import { LocationService } from "./services/LocationService";
 import { MessageService } from "./services/MessageService";
@@ -37,11 +39,13 @@ const THREAT_MODEL_INTERVAL_MS = 60_000;
 
 const systemLogService = new SystemLogService(pool);
 const nlpService = new NLPService();
+const dialogueService = new DialogueService(pool, systemLogService);
 const messageService = new MessageService(
   pool,
   new MessageValidator(),
   nlpService,
-  systemLogService
+  systemLogService,
+  dialogueService
 );
 
 const zoneService = new ZoneService(pool);
@@ -76,6 +80,7 @@ app.use("/api/pings", createPingsRouter(locationService));
 app.use("/api/residents", createResidentsRouter(new ResidentService(pool)));
 app.use("/api/zones", createZonesRouter(zoneService));
 app.use("/api/system-log", createSystemLogRouter(systemLogService));
+app.use("/api/dialogue", createDialogueRouter(dialogueService));
 
 app.get("/api/health", async (_req, res) => {
   const databaseOk = await checkDatabaseConnection();
