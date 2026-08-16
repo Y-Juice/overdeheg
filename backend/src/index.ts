@@ -11,6 +11,7 @@ import { createDialogueRouter } from "./routes/dialogue";
 import { createMessagesRouter } from "./routes/messages";
 import { createPingsRouter } from "./routes/pings";
 import { createResidentsRouter } from "./routes/residents";
+import { createRiskRouter } from "./routes/risk";
 import { createSystemLogRouter } from "./routes/systemLog";
 import { createZonesRouter } from "./routes/zones";
 import { DialogueService } from "./services/DialogueService";
@@ -19,6 +20,7 @@ import { LocationService } from "./services/LocationService";
 import { MessageService } from "./services/MessageService";
 import { NLPService } from "./services/NLPService";
 import { ResidentService } from "./services/ResidentService";
+import { RiskOverviewService } from "./services/RiskOverviewService";
 import { SystemLogService } from "./services/SystemLogService";
 import { MessageValidator } from "./services/validation/MessageValidator";
 import { PingValidator } from "./services/validation/PingValidator";
@@ -83,6 +85,7 @@ app.use("/api/residents", createResidentsRouter(new ResidentService(pool)));
 app.use("/api/zones", createZonesRouter(zoneService));
 app.use("/api/system-log", createSystemLogRouter(systemLogService));
 app.use("/api/dialogue", createDialogueRouter(dialogueService));
+app.use("/api/risk", createRiskRouter(new RiskOverviewService(pool)));
 
 app.get("/api/health", async (_req, res) => {
   const databaseOk = await checkDatabaseConnection();
