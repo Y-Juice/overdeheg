@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { RiskOverviewView } from "../types/api";
 import { CorrelationMatchType, FlagLevel } from "../types/domain";
+import { PredictionService } from "./PredictionService";
 
 interface ZoneRiskRow {
   zone_id: number;
@@ -43,19 +44,24 @@ interface AvgRow {
  * scores per bewoner, risico per zone, correlatiesignalen en vlaggen.
  */
 export class RiskOverviewService {
-  constructor(private readonly db: Pool) {}
+  constructor(
+    private readonly db: Pool,
+    private readonly predictions: PredictionService
+  ) {}
 
   /** Haalt alle aggregaties op die het risicopaneel nodig heeft. */
   async getOverview(): Promise<RiskOverviewView> {
-    const [totals, zones, residents, signals, flags] = await Promise.all([
-      this.loadTotals(),
-      this.loadZoneRisks(),
-      this.loadTopResidents(),
-      this.loadSignals(),
-      this.loadFlagCounts()
-    ]);
+    const [totals, zones, residents, signals, flags, predictions] =
+      await Promise.all([
+        this.loadTotals(),
+        this.loadZoneRisks(),
+        this.loadTopResidents(),
+        this.loadSignals(),
+        this.loadFlagCounts(),
+        this.predictions.getPredictions()
+      ]);
 
-    return { totals, zones, residents, signals, flags };
+    return { totals, zones, residents, signals, flags, predictions };
   }
 
   private async loadTotals(): Promise<RiskOverviewView["totals"]> {
