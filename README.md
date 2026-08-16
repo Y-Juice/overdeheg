@@ -62,7 +62,26 @@ Frontend is opgedeeld in features: `map/`, `chat/`, `risk/`, `systemlog/`.
 
 Features zitten op branches zoals `feat/...` en worden naar `main` gemerged. Commits zijn kort (`feat:` / `fix:`).
 
-## Bronnen / AI
+## Bronnen
+
+### Documentatie
+
+- [React docs](https://react.dev/) — componenten, hooks, state
+- [Vite](https://vitejs.dev/) — frontend build / Docker-devsetup
+- [TypeScript handbook](https://www.typescriptlang.org/docs/) — types in frontend en backend
+- [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) — client store
+- [Express](https://expressjs.com/) — API-routes
+- [node-postgres (`pg`)](https://node-postgres.com/) — queries zonder ORM
+- [PostgreSQL docs](https://www.postgresql.org/docs/current/) — schema, joins, aggregaties
+- [Docker Compose](https://docs.docker.com/compose/) — db + backend + frontend samen draaien
+- [MDN CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) — layout, CSS modules, grid
+- [Google Fonts](https://fonts.google.com/) — Syne en Manrope voor de UI
+
+### Concept (achtergrond)
+
+- [Predictive policing (Wikipedia)](https://en.wikipedia.org/wiki/Predictive_policing) — context voor het dystopische thema (niet als echte methode gebruikt)
+
+### AI
 
 Voor structuuradvies (mappen, services, hoe het niet te ingewikkeld te maken) is deze ChatGPT-chat gebruikt:
 
