@@ -1,4 +1,4 @@
-import { DialogueTree } from "../types/dialogue";
+import { DialogueTree } from "../../types/dialogue";
 
 /**
  * Vaste gespreksbomen voor de buurtchat.
