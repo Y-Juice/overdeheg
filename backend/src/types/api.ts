@@ -111,6 +111,52 @@ export interface FlagStatView {
   count: number;
 }
 
+/** Voorspeld risico van een zone voor het volgende venster. */
+export interface ZoneForecastView {
+  zoneId: number;
+  zoneName: string;
+  currentRisk: number;
+  predictedRisk: number;
+  trend: "stijgend" | "stabiel" | "dalend";
+  reason: string;
+}
+
+/** Patrouilleadvies voor een zone. */
+export interface PatrolAdviceView {
+  zoneId: number;
+  zoneName: string;
+  predictedRisk: number;
+  action: string;
+}
+
+/** Bewoner die volgens het model kan escaleren. */
+export interface WatchItemView {
+  uid: string;
+  zoneName: string;
+  riskScore: number;
+  flagLevel: FlagLevel;
+  escalateChance: number;
+  reason: string;
+}
+
+/** Verwacht incident op basis van recente signalen. */
+export interface PredictedIncidentView {
+  title: string;
+  zoneName: string;
+  likelihood: number;
+  detail: string;
+}
+
+/** Predictieve politie-aggregatie. */
+export interface PredictionsView {
+  hotZoneCount: number;
+  watchCount: number;
+  zones: ZoneForecastView[];
+  patrols: PatrolAdviceView[];
+  watchlist: WatchItemView[];
+  incidents: PredictedIncidentView[];
+}
+
 /** Volledig risico-overzicht voor visualisatie. */
 export interface RiskOverviewView {
   totals: RiskTotalsView;
@@ -118,4 +164,5 @@ export interface RiskOverviewView {
   residents: ResidentRiskView[];
   signals: SignalStatView[];
   flags: FlagStatView[];
+  predictions: PredictionsView;
 }
