@@ -7,18 +7,20 @@ interface AppShellProps {
   map: ReactNode;
   chat: ReactNode;
   systemLog: ReactNode;
+  risk: ReactNode;
 }
 
 /**
- * App-shell van Overdeheg: header plus drie panelen
- * (kaart, chat, systeemlog) op een dark theme.
+ * App-shell van Overdeheg: header plus vier panelen
+ * (kaart, chat, systeemlog, risicoanalyse) op een dark theme.
  */
 export function AppShell({
   zoneName,
   error,
   map,
   chat,
-  systemLog
+  systemLog,
+  risk
 }: AppShellProps) {
   return (
     <div className={styles.shell}>
@@ -38,6 +40,7 @@ export function AppShell({
         <section className={`${styles.panel} ${styles.mapPanel}`}>{map}</section>
         <section className={`${styles.panel} ${styles.chatPanel}`}>{chat}</section>
         <section className={`${styles.panel} ${styles.logPanel}`}>{systemLog}</section>
+        <section className={`${styles.panel} ${styles.riskPanel}`}>{risk}</section>
       </div>
     </div>
   );

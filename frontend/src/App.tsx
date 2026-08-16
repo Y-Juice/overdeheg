@@ -1,6 +1,7 @@
 import { AppShell } from "./components/AppShell";
 import { ChatFeed } from "./features/chat/ChatFeed";
 import { ZoneMap } from "./features/map/ZoneMap";
+import { RiskPanel } from "./features/risk/RiskPanel";
 import { SystemLogPanel } from "./features/systemlog/SystemLogPanel";
 import { useOverdehegData } from "./hooks/useOverdehegData";
 import { useAppStore } from "./stores/appStore";
@@ -21,6 +22,7 @@ function App() {
       map={<ZoneMap />}
       chat={<ChatFeed postMessage={postMessage} removeMessage={removeMessage} />}
       systemLog={<SystemLogPanel />}
+      risk={<RiskPanel />}
     />
   );
 }
